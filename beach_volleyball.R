@@ -310,3 +310,37 @@ p_height_violin <- distinct(vb_matches_all_stats, player_name, birth_date, heigh
 
 p_height_violin
 
+                     
+# Probability of winning after 
+# loosing 1st set by rank difference 
+# faceted by tournament round
+
+
+tbl_first_set_upset <- separate(data = vb_matches, col = score, into = c("set_1", "set_2", "set_3"), sep = ",") %>%
+  filter(!is.na(set_3)) %>%
+  separate(col = set_1, into = c("point_1", "point_2"), sep = "-") %>%
+  mutate(point_diff = as.numeric(point_1) - as.numeric(point_2)) %>%
+  filter(point_diff < 0) %>%
+  filter(!is.na(l_rank), !is.na(w_rank)) %>%
+  mutate(rank_diff = as.numeric(l_rank) - as.numeric(w_rank)) %>%
+  filter(!is.na(rank_diff), !is.na(round)) %>% 
+  select(
+    w_rank, 
+    l_rank, 
+    rank_diff, 
+    round
+  ) 
+
+
+p_freq_wins_after_loss <- ggplot(data = tbl_first_set_upset) +
+  geom_freqpoly(mapping = aes(x = rank_diff, color = round), binwidth = 10, size = 1.25) + 
+  dark_theme_minimal() +
+  labs (
+    x = "Rank Difference (Looser - Winner)", 
+    y = "Frequency of Upsets", 
+    title = "Frequency Distribution of Win after 1st Set Loss", 
+    caption = "Tidy Tuesday - Beach Volleyball"
+  )
+
+p_freq_wins_after_loss
+
