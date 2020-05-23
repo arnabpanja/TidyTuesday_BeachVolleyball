@@ -11,6 +11,7 @@ library(ggdark)
 vb_matches <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-05-19/vb_matches.csv', guess_max = 76000)
 
 
+
 # winning Stats
 
 vb_matches_winners_1 <- pivot_longer(vb_matches, 
@@ -31,8 +32,10 @@ vb_matches_winners_1 <- pivot_longer(vb_matches,
                                      height = w_p1_hgt, 
                                      outcome = "Winning Team", 
                                      player_name = w_player1, 
-                                     birth_date = w_p1_birthdate
+                                     birth_date = w_p1_birthdate,
+                                     round = round
                                      )
+
 
 vb_matches_winners_2 <- pivot_longer(vb_matches, 
                                      c(w_p2_tot_attacks:w_p2_tot_digs), 
@@ -52,7 +55,8 @@ vb_matches_winners_2 <- pivot_longer(vb_matches,
                                         height = w_p2_hgt, 
                                         outcome = "Winning Team", 
                                         player_name = w_player2, 
-                                        birth_date = w_p2_birthdate
+                                        birth_date = w_p2_birthdate, 
+                                        round = round 
                                       )
 
 vb_matches_winners_stats_1 <- vb_matches_winners_1 %>% mutate(new_type = case_when(
@@ -79,7 +83,8 @@ vb_matches_winners_stats_1 <- vb_matches_winners_1 %>% mutate(new_type = case_wh
                           height, 
                           outcome, 
                           player_name, 
-                          birth_date
+                          birth_date, 
+                          round
                         )
 
 vb_matches_winners_stats_2 <- vb_matches_winners_2 %>% mutate(new_type = case_when(
@@ -106,8 +111,10 @@ vb_matches_winners_stats_2 <- vb_matches_winners_2 %>% mutate(new_type = case_wh
     height, 
     outcome, 
     player_name, 
-    birth_date
+    birth_date, 
+    round
   )
+
 
 vb_matches_winners_stats <- union(vb_matches_winners_stats_1, vb_matches_winners_stats_2)
 
@@ -133,8 +140,10 @@ vb_matches_loosers_1 <- pivot_longer(vb_matches,
   height = l_p1_hgt, 
   outcome = "Loosing Team", 
   player_name = l_player1, 
-  birth_date = l_p1_birthdate
+  birth_date = l_p1_birthdate, 
+  round = round
 )
+
 
 vb_matches_loosers_2 <- pivot_longer(vb_matches, 
                                      c(l_p2_tot_attacks:l_p2_tot_digs), 
@@ -154,8 +163,10 @@ vb_matches_loosers_2 <- pivot_longer(vb_matches,
   height = l_p2_hgt, 
   outcome = "Loosing Team", 
   player_name = l_player1, 
-  birth_date = l_p1_birthdate
+  birth_date = l_p1_birthdate, 
+  round = round 
 )
+
 
 vb_matches_loosers_stats_1 <- vb_matches_loosers_1 %>% mutate(new_type = case_when(
   str_detect(types, "tot_aces") ~ "Aces", 
@@ -181,8 +192,10 @@ vb_matches_loosers_stats_1 <- vb_matches_loosers_1 %>% mutate(new_type = case_wh
     height, 
     outcome, 
     player_name, 
-    birth_date
+    birth_date, 
+    round
   )
+
 
 vb_matches_loosers_stats_2 <- vb_matches_loosers_2 %>% mutate(new_type = case_when(
   str_detect(types, "tot_aces") ~ "Aces", 
@@ -208,15 +221,12 @@ vb_matches_loosers_stats_2 <- vb_matches_loosers_2 %>% mutate(new_type = case_wh
     height, 
     outcome, 
     player_name, 
-    birth_date
+    birth_date, 
+    round
   )
 
+
 vb_matches_loosers_stats <- union(vb_matches_loosers_stats_1, vb_matches_loosers_stats_2)
-
-
-
-#p_winners_stats / p_loosers_stats
-
 
 vb_matches_all_stats <- union(vb_matches_winners_stats, vb_matches_loosers_stats)
 
@@ -247,7 +257,6 @@ p_strategies
 
 p_age_boxplot <- distinct(vb_matches_all_stats, player_name, birth_date, age, outcome) %>% 
   ggplot() + geom_boxplot(mapping = aes(x = outcome, y = age, fill = outcome), color = "white", varwidth = TRUE, show.legend = FALSE, na.rm = TRUE) + 
-  scale_fill_manual(values = c("red", "blue")) + 
   dark_theme_minimal() +
   labs(
     x = "Teams", 
@@ -257,7 +266,7 @@ p_age_boxplot <- distinct(vb_matches_all_stats, player_name, birth_date, age, ou
   )
 p_age_boxplot
 
-# Violin Map
+# Example of a Violin Map
 
 p_age_violin <- distinct(vb_matches_all_stats, player_name, birth_date, age, outcome) %>% 
   ggplot() + geom_violin(mapping = aes(x = outcome, y = age, fill = outcome), 
@@ -265,7 +274,6 @@ p_age_violin <- distinct(vb_matches_all_stats, player_name, birth_date, age, out
                          orientation = "x", 
                          show.legend = FALSE, 
                          na.rm = TRUE) + 
-  scale_fill_manual(values = c("red", "blue")) +
   dark_theme_minimal() +
   labs(
     x = "Teams", 
@@ -280,7 +288,6 @@ p_age_violin
 
 p_height_boxplot <- distinct(vb_matches_all_stats, player_name, birth_date, height, outcome) %>% 
   ggplot() + geom_boxplot(mapping = aes(x = outcome, y = height, fill = outcome), color = "white", varwidth = TRUE, show.legend = FALSE, na.rm = TRUE) + 
-  scale_fill_manual(values = c("red", "blue")) + 
   dark_theme_minimal() +
   labs(
     x = "Teams", 
@@ -291,7 +298,7 @@ p_height_boxplot <- distinct(vb_matches_all_stats, player_name, birth_date, heig
 
 p_height_boxplot
 
-#violin map
+#Example of a violin map
 
 p_height_violin <- distinct(vb_matches_all_stats, player_name, birth_date, height, outcome) %>% 
   ggplot() + geom_violin(mapping = aes(x = outcome, y = height, fill = outcome), 
@@ -299,7 +306,6 @@ p_height_violin <- distinct(vb_matches_all_stats, player_name, birth_date, heigh
                          orientation = "x", 
                          show.legend = FALSE, 
                          na.rm = TRUE) + 
-  scale_fill_manual(values = c("red", "blue")) +
   dark_theme_minimal() +
   labs(
     x = "Teams", 
@@ -310,7 +316,10 @@ p_height_violin <- distinct(vb_matches_all_stats, player_name, birth_date, heigh
 
 p_height_violin
 
-                     
+#Use of a patchwork package in combining graphs
+(p_age_boxplot + p_age_violin) / (p_height_boxplot + p_height_violin)
+
+
 # Probability of winning after 
 # loosing 1st set by rank difference 
 # faceted by tournament round
@@ -336,11 +345,80 @@ p_freq_wins_after_loss <- ggplot(data = tbl_first_set_upset) +
   geom_freqpoly(mapping = aes(x = rank_diff, color = round), binwidth = 10, size = 1.25) + 
   dark_theme_minimal() +
   labs (
-    x = "Rank Difference (Looser - Winner)", 
-    y = "Frequency of Upsets", 
+    x = "Team Rank Difference (Looser - Winner)", 
+    y = "Frequency", 
     title = "Frequency Distribution of Win after 1st Set Loss", 
     caption = "Tidy Tuesday - Beach Volleyball"
-  )
+  ) +
+  guides(color = guide_legend(title = "Round"))
+
+
+
+
 
 p_freq_wins_after_loss
 
+
+# Strategues/Moves adopted in different rounds 
+# in a tournament 
+
+p_round_strategies <- filter(vb_matches_all_stats, types != "Hit Percentage") %>% 
+  filter(!is.na(round)) %>%
+  group_by(round, types) %>%
+  summarise(Counts = sum(counts, na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  ggplot() + geom_count(mapping = aes(x = round, 
+                                      y = types, 
+                                      size = Counts, 
+                                      color = Counts), 
+                        show.legend = TRUE, stat = "identity") +
+  scale_color_continuous(labels = function(x) format(x, scientific = FALSE)) + 
+  scale_size_continuous(labels = function(x) format(x, scientific = FALSE)) + 
+  dark_theme_minimal() + 
+  labs(
+    x = "Rounds", 
+    y = "Moves", 
+    title = "Moves/Strategies vs Rounds", 
+    caption = "Tidy Tuesday - Beach Volleyball"
+  )
+
+
+p_round_strategies
+
+# match duration distribution versus rounds
+
+
+
+vb_matches_durations <- vb_matches %>% filter(!is.na(round)) %>% filter(!is.na(duration)) %>%
+              select(
+                    circuit, 
+                    tournament, 
+                    country, 
+                    year, 
+                    date, 
+                    gender, 
+                    match_num, 
+                    score, 
+                    duration, 
+                    round, 
+                    bracket
+                    ) %>%
+                    separate(duration, into = c("hours", "minutes", "seconds"), sep = ":") %>%
+                    mutate(duration_mins = as.numeric(hours) * 60 + as.numeric(minutes) + round(as.numeric(seconds)/60, digits = 2))
+
+
+p_match_durations <- ggplot(data = vb_matches_durations) + 
+  geom_boxplot(mapping = aes(x = reorder(round, duration_mins, FUN = median), y = duration_mins, fill = round), 
+               show.legend = FALSE, 
+               color = "white",
+               orientation = "x",
+               na.rm = TRUE) + 
+  dark_theme_minimal() + 
+  labs(
+    x = "Round", 
+    y = "Match Duration in Mins", 
+    title = "Match Duration Vs Match Rounds", 
+    caption = "Tidy Tuesday - Beach Volleyball"
+  )
+
+p_match_durations
